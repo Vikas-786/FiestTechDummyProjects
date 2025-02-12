@@ -1,0 +1,13 @@
+package rules.Validation
+
+@gw.rules.RuleName("NewCustomFKEntity_ExtValidationRules")
+@gw.rules.RuleSetDescription("Validation Rules for NewCustomFKEntity_Ext")
+class NewCustomFKEntity_ExtValidationRules extends gw.rules.RuleSetBase {
+  static function invoke(bean : entity.NewCustomFKEntity_Ext) : gw.rules.ExecutionSession {
+    return invoke( new gw.rules.ExecutionSession(), bean )
+  }
+
+  static function invoke(exeSession : gw.rules.ExecutionSession, bean : entity.NewCustomFKEntity_Ext) : gw.rules.ExecutionSession {
+    return _invoke( exeSession, bean, "NewCustomFKEntity_ExtValidationRules", NewCustomFKEntity_ExtValidationRules )
+  }
+}
