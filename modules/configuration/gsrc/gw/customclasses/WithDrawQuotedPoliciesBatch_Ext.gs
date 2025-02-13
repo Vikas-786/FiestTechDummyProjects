@@ -25,32 +25,37 @@ class WithDrawQuotedPoliciesBatch_Ext extends BatchProcessBase {
   }
 
   function getQuotedPolicies() : PolicyPeriod[] {
-
     var quotedPolicies = Query.make(PolicyPeriod)
         .compare(PolicyPeriod#Status, Relop.Equals, PolicyPeriodStatus.TC_QUOTED)
-        .compare(PolicyPeriod#EditEffectiveDate, Relop.LessThan, DateUtil.currentDate())
 
     var jobsLinkedToPolicies = quotedPolicies.join(PolicyPeriod#Job)
 
     var filteredQuotedPolicies = jobsLinkedToPolicies.or(\jobFilter -> {
       jobFilter.compare(entity.Job#Subtype, Relop.Equals, Job.TC_POLICYCHANGE)
       jobFilter.compare(entity.Job#Subtype, Relop.Equals, Job.TC_REINSTATEMENT)
-    }).select()
+    })
 
-    return filteredQuotedPolicies.toTypedArray()
+    var jobsWithSelectedVersion= filteredQuotedPolicies.join(entity.Job#SelectedVersion)
+
+    var finalResult = jobsWithSelectedVersion
+        .compare(PolicyPeriod#EditEffectiveDate, Relop.LessThan, DateUtil.currentDate())
+        .select()
+
+    return finalResult.toTypedArray()
   }
 
+}
   /*public construct() {
     super(BatchProcessType.TC_WITHDRAWQUOTEDPOLICIESBATCH) //registering the currentbatch
   }
 
   function getQuotedPolicyWithDraw()
-  {
+  {;
 
   }
     protected override function doWork() {
 
-    *//* gw.transaction.Transaction.runWithNewBundle(\bundle -> {
+    /* gw.transaction.Transaction.runWithNewBundle(\bundle -> {
 
         //Step 1.) Querying policies quoted 2 days back
         var policyQuery = Query.make(PolicyPeriod)
@@ -69,4 +74,37 @@ class WithDrawQuotedPoliciesBatch_Ext extends BatchProcessBase {
 
      }*/
 
-}
+  /* initial query */
+
+//  var quotedPolicies = Query.make(PolicyPeriod)
+//      .compare(PolicyPeriod#Status, Relop.Equals, PolicyPeriodStatus.TC_QUOTED)
+//
+//  var jobsLinkedToPolicies = quotedPolicies.join(PolicyPeriod#Job)
+//
+//  var filteredQuotedPolicies = jobsLinkedToPolicies.or(\jobFilter -> {
+//    jobFilter.compare(entity.Job#Subtype, Relop.Equals, Job.TC_POLICYCHANGE)
+//    jobFilter.compare(entity.Job#Subtype, Relop.Equals, Job.TC_REINSTATEMENT)
+//  }).select()
+//
+//  return filteredQuotedPolicies.toTypedArray()
+
+} */
+
+
+/*
+* var quotedPolicies = Query.make(PolicyPeriod)
+        .compare(PolicyPeriod#Status, Relop.Equals, PolicyPeriodStatus.TC_QUOTED)
+
+    var jobsLinkedToPolicies = quotedPolicies.join(PolicyPeriod#Job)
+
+    var filteredQuotedPolicies = jobsLinkedToPolicies.or(\jobFilter -> {
+      jobFilter.compare(entity.Job#Subtype, Relop.Equals, Job.TC_POLICYCHANGE)
+      jobFilter.compare(entity.Job#Subtype, Relop.Equals, Job.TC_REINSTATEMENT)
+    })
+
+    var finalResult = filteredQuotedPolicies
+        .compare(DBFunction.DateFromTimestamp(filteredQuotedPolicies.getColumnRef("CreateTime")), Relop.LessThan, DateUtil.currentDate())
+        .select()
+
+    return finalResult.toTypedArray()
+* */
